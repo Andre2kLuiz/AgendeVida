@@ -1,5 +1,8 @@
 package AgendeVida.com.AgendeVida.services;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import AgendeVida.com.AgendeVida.dto.PacienteRequestDTO;
@@ -28,5 +31,53 @@ public class PacienteService {
         pacienteDetalheRepository.save(detalhe);
 
         return CadastroMapper.toPacienteResponse(usuarioSalvo, detalhe);
+    }
+
+    public PacienteResponseDTO buscarPorId(String id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+
+        PacienteDetalhe detalhe = pacienteDetalheRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Detalhes do paciente não encontrados"));
+
+        return CadastroMapper.toPacienteResponse(usuario, detalhe);
+    }
+
+    public List<PacienteResponseDTO> listarTodos() {
+        List<PacienteDetalhe> detalhes = pacienteDetalheRepository.findAll();
+        return detalhes.stream()
+                .map(d -> CadastroMapper.toPacienteResponse(d.getUsuario(), d))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public PacienteResponseDTO atualizar(String id, PacienteRequestDTO dto) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+        PacienteDetalhe detalhe = pacienteDetalheRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Detalhes do paciente não encontrados"));
+
+        // Atualizar dados do usuário
+        usuario.setNome(dto.getNome());
+        usuario.setEmail(dto.getEmail());
+        usuario.setTelefone(dto.getTelefone());
+
+        // Atualizar detalhes
+        detalhe.setCpf(dto.getCpf());
+        detalhe.setDataNascimento(dto.getDataNascimento());
+
+        usuarioRepository.save(usuario);
+        pacienteDetalheRepository.save(detalhe);
+
+        return CadastroMapper.toPacienteResponse(usuario, detalhe);
+    }
+
+    @Transactional
+    public void deletar(String id) {
+        if (!usuarioRepository.existsById(id)) {
+            throw new RuntimeException("Paciente não encontrado");
+        }
+        pacienteDetalheRepository.deleteById(id);
+        usuarioRepository.deleteById(id);
     }
 }
