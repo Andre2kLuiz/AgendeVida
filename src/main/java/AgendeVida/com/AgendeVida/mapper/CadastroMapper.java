@@ -16,6 +16,7 @@ public class CadastroMapper {
                 .nome(dto.getNome())
                 .email(dto.getEmail())
                 .senha(dto.getSenha()) // será criptografada depois
+                .telefone(dto.getTelefone())
                 .role(Role.PACIENTE)
                 .build();
     }
@@ -44,6 +45,7 @@ public class CadastroMapper {
                 .nome(dto.getNome())
                 .email(dto.getEmail())
                 .senha(dto.getSenha())
+                .telefone(dto.getTelefone())
                 .role(Role.MEDICO)
                 .build();
     }
