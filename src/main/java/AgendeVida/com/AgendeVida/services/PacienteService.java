@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import AgendeVida.com.AgendeVida.dto.PacienteRequestDTO;
 import AgendeVida.com.AgendeVida.dto.PacienteResponseDTO;
-import AgendeVida.com.AgendeVida.mapper.CadastroMapper;
+import AgendeVida.com.AgendeVida.mapper.PacienteMapper;
 import AgendeVida.com.AgendeVida.model.PacienteDetalhe;
 import AgendeVida.com.AgendeVida.model.Usuario;
 import AgendeVida.com.AgendeVida.repositories.PacienteDetalheRepository;
@@ -24,13 +24,13 @@ public class PacienteService {
 
     @Transactional
     public PacienteResponseDTO cadastroPaciente(PacienteRequestDTO dto) {
-        Usuario usuario = CadastroMapper.toUsuarioFromPaciente(dto);
+        Usuario usuario = PacienteMapper.toUsuarioFromPaciente(dto);
         Usuario usuarioSalvo = usuarioRepository.save(usuario);
 
-        PacienteDetalhe detalhe = CadastroMapper.toPacienteDetalhe(dto, usuarioSalvo);
+        PacienteDetalhe detalhe = PacienteMapper.toPacienteDetalhe(dto, usuarioSalvo);
         pacienteDetalheRepository.save(detalhe);
 
-        return CadastroMapper.toPacienteResponse(usuarioSalvo, detalhe);
+        return PacienteMapper.toPacienteResponse(usuarioSalvo, detalhe);
     }
 
     public PacienteResponseDTO buscarPorId(String id) {
@@ -40,13 +40,13 @@ public class PacienteService {
         PacienteDetalhe detalhe = pacienteDetalheRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Detalhes do paciente não encontrados"));
 
-        return CadastroMapper.toPacienteResponse(usuario, detalhe);
+        return PacienteMapper.toPacienteResponse(usuario, detalhe);
     }
 
     public List<PacienteResponseDTO> listarTodos() {
         List<PacienteDetalhe> detalhes = pacienteDetalheRepository.findAll();
         return detalhes.stream()
-                .map(d -> CadastroMapper.toPacienteResponse(d.getUsuario(), d))
+                .map(d -> PacienteMapper.toPacienteResponse(d.getUsuario(), d))
                 .collect(Collectors.toList());
     }
 
@@ -69,7 +69,7 @@ public class PacienteService {
         usuarioRepository.save(usuario);
         pacienteDetalheRepository.save(detalhe);
 
-        return CadastroMapper.toPacienteResponse(usuario, detalhe);
+        return PacienteMapper.toPacienteResponse(usuario, detalhe);
     }
 
     @Transactional
