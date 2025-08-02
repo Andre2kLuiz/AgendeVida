@@ -40,5 +40,6 @@ public class PacienteDetalhe {
     @OneToMany(mappedBy = "pacienteDetalhe")
     private List<Agendamento> agendamentos;
 
+    @OneToMany(mappedBy = "pacienteDetalhe")
     private List<Exame> exames;
 }
